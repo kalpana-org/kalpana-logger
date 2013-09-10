@@ -1,5 +1,6 @@
 from datetime import datetime
 import itertools
+import os
 from os.path import basename, exists, expanduser, join, normcase
 from os.path import normpath, realpath, sep
 import re
@@ -64,6 +65,8 @@ class UserPlugin(GUIPlugin):
     def get_logpaths(self):
         rootdir = fixpath(self.settings['rootdir'])
         logdir = join(rootdir, self.settings['logdir'])
+        if not exists(logdir):
+            os.makedirs(logdir, mode=0o755, exist_ok=True)
         indexpath = join(logdir, 'index.json')
         rel_fpath = fixpath(self.textarea.file_path).lstrip(rootdir).lstrip(sep)
         return logdir, indexpath, rel_fpath
