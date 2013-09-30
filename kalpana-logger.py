@@ -12,6 +12,7 @@ from pluginlib import GUIPlugin
 
 class UserPlugin(GUIPlugin):
     def __init__(self, objects, get_path):
+        super().__init__(objects, get_path)
         self.textarea = objects['textarea']
         self.textarea.file_saved.connect(self.on_save)
         self.configpath = objects['settings manager'].get_config_directory()
@@ -28,9 +29,11 @@ class UserPlugin(GUIPlugin):
         arg = arg.lower().strip()
         filepath = self.textarea.file_path
         if not filepath:
-            return ('Can\'t log an unnamed file! Save and try again (without offset)', True)
+            self.error('Can\'t log an unnamed file! Save and try again (without offset)')
+            return
         if arg not in ('y','n'):
-            return ('Argument should be y/n! (use offset/no offset)', True)
+            self.error('Argument should be y/n! (use offset/no offset)')
+            return
         # Offset
         if arg == 'y':
             offset = len(re.findall(r'\S+', read_file(self.textarea.file_path)))
@@ -40,13 +43,14 @@ class UserPlugin(GUIPlugin):
         logdir, indexpath, rel_fpath = self.get_logpaths()
         index = get_index(indexpath)
         if rel_fpath in index:
-            return ('File already logged!', True)
+            self.error('File already logged!')
+            return
         # Init
         logfname = generate_logfilename(logdir, rel_fpath)
         index[rel_fpath] = logfname
         write_file(join(logdir, logfname), str(offset) + '\n')
         write_json(indexpath, index)
-        return ('Started logging file!', False)
+        self.print_('Started logging file!')
 
     def on_save(self):
         logdir, indexpath, rel_fpath = self.get_logpaths()
