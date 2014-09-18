@@ -15,7 +15,7 @@ class UserPlugin(GUIPlugin):
         super().__init__(objects, get_path)
         self.textarea = objects['textarea']
         self.textarea.file_saved.connect(self.on_save)
-        self.configpath = objects['settings manager'].get_config_directory()
+        self.configpath = objects['settingsmanager'].get_config_directory()
         self.local_path = get_path()
         self.commands = {'l': (self.start_logging, 'Start logging this file (y for offset, n for no offset, omit argument for only info)')}
 
